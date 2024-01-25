@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import notFound from "./app/middlewares/notFound";
 import globalErrorhandler from "./app/middlewares/globalErrorhandler";
+import router from "./app/routes";
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.get("/", (req, res) => {
       '<div style="height:80vh; width:100vw; display:flex; justify-content:center;align-items:center;font-size:4rem;font-style: oblique;font-weight: bold;font-family:system-ui;color:purple;">Munalex Server is Running...</div>',
     );
 });
+
+// Application Routes
+app.use("/api/v1", router);
 
 // route not found error
 app.use("*", notFound);
