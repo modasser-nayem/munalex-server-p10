@@ -2,7 +2,7 @@ import { ZodError } from "zod";
 import { TErrorHandlerResponse } from "../interface/error";
 
 const zodErrorHandler = (err: ZodError): TErrorHandlerResponse => {
-  const message = "Validation error";
+  const message = err.issues[0].message;
   const error = err.issues.map((issue) => ({
     path: issue.path[issue.path.length - 1],
     message: issue.message,
