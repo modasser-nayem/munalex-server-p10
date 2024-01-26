@@ -1,4 +1,4 @@
-import { TErrorHandlerResponse } from "./error.interface";
+import { TErrorHandlerResponse } from "../interface/error";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const duplicateErrorHandler = (err: any): TErrorHandlerResponse => {
@@ -11,7 +11,6 @@ const duplicateErrorHandler = (err: any): TErrorHandlerResponse => {
   const message = `${extractedMessage} is already exists`;
   return {
     statusCode: 400,
-    errorType: "Duplicate data",
     message: message,
     error: {},
   };

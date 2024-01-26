@@ -26,7 +26,7 @@ const loginUser: RequestHandler = catchAsync(async (req, res) => {
 });
 
 const getMe: RequestHandler = catchAsync(async (req, res) => {
-  const result = await userServices.getMeIntoDB("ali modasser nayem");
+  const result = await userServices.getMeIntoDB(req.user.id);
   sendResponse(res, {
     statusCode: 200,
     success: true,

@@ -2,6 +2,7 @@ import { Router } from "express";
 import userControllers from "./user.controllers";
 import requestValidate from "../../middlewares/requestValidation";
 import { userValidationSchemas } from "./user.validation";
+import auth from "../../middlewares/auth";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router.post(
 );
 
 // get user profile
-router.get("/me", userControllers.getMe);
+router.get("/me", auth(), userControllers.getMe);
 
 const userRoutes = router;
 export default userRoutes;

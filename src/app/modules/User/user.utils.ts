@@ -31,6 +31,9 @@ export const createAccessToken = (
   return jwt.sign(payload, access_secret, { expiresIn });
 };
 
-export const verifyAccessToken = (token: string, access_secret: string) => {
+export const verifyAccessToken = async (
+  token: string,
+  access_secret: string,
+) => {
   return jwt.verify(token, access_secret);
 };
