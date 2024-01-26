@@ -15,7 +15,7 @@ const productSchema = new Schema<TProduct>(
     quantity: {
       type: Number,
     },
-    ReleaseDate: {
+    releaseDate: {
       type: Date,
     },
     model: {
@@ -28,27 +28,19 @@ const productSchema = new Schema<TProduct>(
     category: {
       type: String,
     },
+    image: {
+      type: String,
+    },
+    specification: {
+      type: [
+        {
+          name: String,
+          options: {},
+        },
+      ],
+    },
   },
   { timestamps: true },
 );
 
 export const Product = model<TProduct>("Product", productSchema);
-
-// sale model
-const saleSchema = new Schema<TSale>({
-  productId: {
-    type: Schema.ObjectId,
-    ref: "Brand",
-  },
-  quantity: {
-    type: Number,
-  },
-  buyer: {
-    type: String,
-  },
-  date: {
-    type: Date,
-  },
-});
-
-export const Sale = model<TSale>("Sale", saleSchema);

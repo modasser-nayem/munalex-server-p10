@@ -3,10 +3,10 @@ import { Router } from "express";
 const router = Router();
 
 // sale a product
-router.post("/sales");
+router.post("/");
 
 // get sale history
-router.get("/sales");
+router.get("/");
 
 const salesRouter = router;
 export default salesRouter;

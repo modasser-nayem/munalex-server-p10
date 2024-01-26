@@ -7,7 +7,7 @@ const registerUser: RequestHandler = catchAsync(async (req, res) => {
   const result = await userServices.registerUserIntoDB(req.body);
 
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: 201,
     success: true,
     message: "User is successfully Registered",
     data: result,
