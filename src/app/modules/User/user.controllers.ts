@@ -1,31 +1,37 @@
 import { RequestHandler } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
+import userServices from "./user.services";
 
 const registerUser: RequestHandler = catchAsync(async (req, res) => {
+  const result = await userServices.registerUserIntoDB(req.body);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "User is successfully Register",
-    data: "result",
+    message: "User is successfully Registered",
+    data: result,
   });
 });
 
 const loginUser: RequestHandler = catchAsync(async (req, res) => {
+  const result = await userServices.loginUserFromDB(req.body);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "User is successfully Logged in",
-    data: "result",
+    data: result,
   });
 });
 
 const getMe: RequestHandler = catchAsync(async (req, res) => {
+  const result = await userServices.getMeIntoDB("ali modasser nayem");
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "My profile retrieved successfully",
-    data: "result",
+    data: result,
   });
 });
 

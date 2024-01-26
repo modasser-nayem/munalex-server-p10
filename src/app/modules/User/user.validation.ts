@@ -7,16 +7,10 @@ const userRegisterValidationSchema = z.object({
       name: z
         .string({ required_error: "Name is required" })
         .min(4, { message: "Name must be grater than 4 character" })
-        .max(30, { message: "Name can't be more than 30 character" })
-        .refine((value) => isEmptyString(value), {
-          message: "Please provide your name",
-        }),
+        .max(30, { message: "Name can't be more than 30 character" }),
       email: z
         .string({ required_error: "Email is required" })
-        .email({ message: "Invalid email address" })
-        .refine((value) => isEmptyString(value), {
-          message: "Please provide your email address",
-        }),
+        .email({ message: "Invalid email address" }),
       password: z
         .string({ required_error: "Password is required" })
         .min(6, { message: "Password must be at least 6 characters long" })

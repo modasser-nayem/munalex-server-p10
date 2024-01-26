@@ -20,7 +20,7 @@ router.post(
 );
 
 // get user profile
-router.post("/me", userControllers.getMe);
+router.get("/me", userControllers.getMe);
 
 const userRoutes = router;
 export default userRoutes;
