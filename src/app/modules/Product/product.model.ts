@@ -37,11 +37,7 @@ const productSchema = new Schema<TProduct>(
     powerSource: {
       type: String,
     },
-    features: {
-      type: {
-        type: "String",
-      },
-    },
+    features: {},
     image: {
       type: String,
     },
@@ -52,5 +48,11 @@ const productSchema = new Schema<TProduct>(
   },
   { timestamps: true },
 );
+
+// filter out deleted documents
+productSchema.pre(/^find/, function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
 
 export const Product = model<TProduct>("Product", productSchema);

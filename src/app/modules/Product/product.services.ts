@@ -1,8 +1,10 @@
 import AppError from "../../error/AppError";
-import caseInsensitiveStringGen from "../../utils/caseInsensitiveStirngGen";
+import caseInsensitiveStringGen from "../../utils/caseInsensitiveStringGen";
 import { TProduct } from "./product.interface";
 import { Product } from "./product.model";
+import mongoose from "mongoose";
 
+// create
 const createProductIntoDB = async (data: TProduct) => {
   if (
     await Product.findOne({
@@ -13,7 +15,7 @@ const createProductIntoDB = async (data: TProduct) => {
   }
 
   //  model check
-  if (await Product.findOne({ model: data.model })) {
+  if (await Product.findOne({ model: caseInsensitiveStringGen(data.model) })) {
     throw new AppError(400, "Product model is already exist");
   }
 
@@ -23,10 +25,69 @@ const createProductIntoDB = async (data: TProduct) => {
   return result;
 };
 
+// update
 const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
-  return data;
+  if (!(await Product.findById(id))) {
+    throw new AppError(404, "Product not found!");
+  }
+
+  const { connectivity, features, ...primitiveProductData } = data;
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // primitive data update
+    if (Object.keys(primitiveProductData)) {
+      await Product.findByIdAndUpdate(id, primitiveProductData, {
+        new: true,
+        runValidators: true,
+        session,
+      });
+    }
+
+    // array data update
+    if (connectivity?.length) {
+      await Product.findByIdAndUpdate(
+        id,
+        {
+          $set: { connectivity: connectivity },
+        },
+        { new: true, runValidators: true, session },
+      );
+    }
+
+    // // dynamic object update
+    // if (features && Object.keys(features).length) {
+    //   for(const [key, value] of Object.entries(features))
+    // }
+    if (features && Object.keys(features).length) {
+      await Product.findByIdAndUpdate(
+        id,
+        { $set: { features: features } },
+        { new: true, runValidators: true, session },
+      );
+    }
+
+    const result = await Product.findById(
+      id,
+      { isDeleted: 0, __v: 0 },
+      { session },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(500, "Product update failed!, try again");
+  }
 };
 
+// get all
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAllProductFromDB = async (query: Record<string, any>) => {
   const minPrice = Number(query.minPrice);
@@ -119,11 +180,21 @@ const getAllProductFromDB = async (query: Record<string, any>) => {
   return result;
 };
 
+// update
 const getSingleProductFromDB = async (id: string) => {
   const result = await Product.findById(id, { isDeleted: 0, __v: 0 });
+
+  if (!result) {
+    throw new AppError(404, "Product not found!");
+  }
   return result;
 };
+
+// delete
 const deleteProductIntoDB = async (id: string) => {
+  if (!(await Product.findById(id))) {
+    throw new AppError(404, "Product not found!");
+  }
   await Product.findByIdAndUpdate(id, { isDeleted: true });
   return null;
 };
