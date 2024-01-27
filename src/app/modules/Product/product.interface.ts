@@ -1,11 +1,6 @@
 export type TOperatingSystem = "ios" | "android" | "windows" | "linux";
 
-export type TSpecificationOptions = Record<string, string>;
-
-export type TSpecification = {
-  name: string;
-  options: TSpecificationOptions;
-};
+export type TProductFeatures = Record<string, string>;
 
 export type TProduct = {
   name: string;
@@ -15,16 +10,10 @@ export type TProduct = {
   model: string;
   brand: string;
   category: string;
+  operatingSystem?: string;
+  connectivity: string[];
+  powerSource: string;
+  features: TProductFeatures;
   image: string;
-  specification: TSpecification[];
+  isDeleted?: boolean;
 };
-
-// export const specification: TSpecification[] = [
-//   {
-//     name: "Connectivity",
-//     options: {
-//       name: "dfd",
-//       age: "43",
-//     },
-//   },
-// ];

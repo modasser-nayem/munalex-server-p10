@@ -2,52 +2,70 @@ import { z } from "zod";
 import { isEmptyString } from "../../utils/zodValidation";
 
 const productCreateValidationSchema = z.object({
-  body: z
-    .object({
-      name: z
-        .string({ required_error: "Name is required" })
-        .min(4, { message: "Name must be grater than 4 character" }),
-      price: z
-        .number({ required_error: "Price is required" })
-        .min(0, { message: "Price can't be a negative number" }),
-      quantity: z
-        .number({ required_error: "Price is required" })
-        .min(1, { message: "Quantity can't be 0 or negative number" }),
-      releaseDate: z.date({
-        invalid_type_error: "Release date must be a date",
+  body: z.object({
+    name: z
+      .string({ required_error: "Name is required" })
+      .min(4, { message: "Name must be grater than 4 character" }),
+    price: z
+      .number({ required_error: "Price is required" })
+      .min(0, { message: "Price can't be a negative number" }),
+    quantity: z
+      .number({ required_error: "Price is required" })
+      .min(1, { message: "Quantity can't be 0 or negative number" }),
+    releaseDate: z
+      .string({ required_error: "Release Date is required" })
+      .datetime({ message: "Release date must be a date" }),
+    model: z
+      .string({ required_error: "Model is required" })
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide product model",
       }),
-      model: z
-        .string({ required_error: "Model is required" })
-        .refine((value) => isEmptyString(value), {
-          message: "Please provide product model",
+    brand: z
+      .string({ required_error: "Brand is required" })
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide product brand",
+      }),
+    category: z
+      .string({ required_error: "Category is required" })
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide category",
+      }),
+    operatingSystem: z.string().optional(),
+    connectivity: z
+      .array(z.string(), {
+        required_error:
+          "Please provide connectivity (e.g., Bluetooth, Wi-Fi, USB-C)",
+      })
+      .refine((data) => data.length > 0, {
+        message: "Please provide product connectivity",
+      }),
+    powerSource: z
+      .string({
+        required_error: "Please provide product power source",
+      })
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide power source (e.g., battery-powered, plug-in)",
+      }),
+    features: z
+      .record(
+        z.string({
+          invalid_type_error:
+            "Provide key value faire data, key and value always string",
         }),
-      brand: z
-        .string({ required_error: "Brand is required" })
-        .refine((value) => isEmptyString(value), {
-          message: "Please provide product brand",
-        }),
-      category: z
-        .string({ required_error: "Category is required" })
-        .refine((value) => isEmptyString(value), {
-          message: "Please provide category",
-        }),
-      image: z
-        .string({ required_error: "Image is required" })
-        .refine((value) => isEmptyString(value), {
-          message: "Please provide image",
-        }),
-      specification: z.array(
-        z.object({
-          name: z.string(),
-          options: z.record(z.string()),
-        }),
-      ),
-    })
-    .refine((data) => data.specification.length! > 2, {
-      message:
-        "Please provide minimum 2 product specification like Connectivity, Features etc.",
-      path: ["specification"],
-    }),
+        {
+          required_error: "Product features is required",
+        },
+      )
+      .refine((value) => Object.keys(value).length !== 0, {
+        message:
+          "Please provide relevant product specifications features like (e.g camera resolution, storage capacity)",
+      }),
+    image: z
+      .string({ required_error: "Image is required" })
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide image",
+      }),
+  }),
 });
 
 const productUpdateValidationSchema = z.object({
@@ -65,9 +83,8 @@ const productUpdateValidationSchema = z.object({
       .min(1, { message: "Quantity can't be 0 or negative number" })
       .optional(),
     releaseDate: z
-      .date({
-        invalid_type_error: "Release date must be a date",
-      })
+      .string()
+      .datetime({ message: "Release date must be a date" })
       .optional(),
     model: z
       .string()
@@ -87,19 +104,15 @@ const productUpdateValidationSchema = z.object({
         message: "Please provide category",
       })
       .optional(),
+    operatingSystem: z.string().optional(),
+    connectivity: z.array(z.string()).optional(),
+    powerSource: z.string().optional(),
+    features: z.record(z.string()).optional(),
     image: z
       .string()
       .refine((value) => isEmptyString(value), {
         message: "Please provide image",
       })
-      .optional(),
-    specification: z
-      .array(
-        z.object({
-          name: z.string(),
-          options: z.record(z.string()),
-        }),
-      )
       .optional(),
   }),
 });

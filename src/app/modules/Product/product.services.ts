@@ -1,7 +1,26 @@
+import AppError from "../../error/AppError";
+import caseInsensitiveStringGen from "../../utils/caseInsensitiveStirngGen";
 import { TProduct } from "./product.interface";
+import { Product } from "./product.model";
 
 const createProductIntoDB = async (data: TProduct) => {
-  return data;
+  if (
+    await Product.findOne({
+      name: caseInsensitiveStringGen(data.name),
+    })
+  ) {
+    throw new AppError(400, "Product name is already exist");
+  }
+
+  //  model check
+  if (await Product.findOne({ model: data.model })) {
+    throw new AppError(400, "Product model is already exist");
+  }
+
+  // create product
+  const result = await Product.create(data);
+
+  return result;
 };
 
 const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
@@ -10,14 +29,103 @@ const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAllProductFromDB = async (query: Record<string, any>) => {
-  return query;
+  const minPrice = Number(query.minPrice);
+  const maxPrice = Number(query.maxPrice);
+  const releaseDateStart = query.releaseDateStart;
+  const releaseDateEnd = query?.releaseDateEnd;
+  const brand = query.brand;
+  const model = query.model;
+  const category = query.category;
+  const operatingSystem = query.operatingSystem;
+  const connectivity = query.connectivity
+    ? query.connectivity.split(",")
+    : null;
+  const powerSource = query.powerSource ? query.powerSource.toString() : "";
+  // const features = query.features ? query.features.toString() : "";
+
+  // =================================
+  const priceFilter = {
+    $gte: minPrice || 0,
+    $lte: maxPrice || Number.MAX_VALUE,
+  };
+
+  const releaseDateFilter: Record<string, unknown> = {};
+  if (releaseDateStart) {
+    releaseDateFilter.releaseDate = {
+      $gte: new Date(releaseDateStart).toISOString(),
+    } || {
+      $exists: true,
+    };
+  }
+
+  if (releaseDateEnd) {
+    releaseDateFilter.releaseDate = releaseDateFilter.releaseDate
+      ? {
+          ...releaseDateFilter.releaseDate,
+          $lte: new Date(releaseDateEnd).toISOString(),
+        } || {
+          $exists: true,
+        }
+      : {
+          $lte: new Date(releaseDateEnd).toISOString(),
+        } || {
+          $exists: true,
+        };
+  }
+
+  const brandFilter = brand ? { brand: caseInsensitiveStringGen(brand) } : {};
+
+  const modelFilter = model ? { model: caseInsensitiveStringGen(model) } : {};
+
+  const categoryFilter = category
+    ? { category: caseInsensitiveStringGen(category) }
+    : {};
+
+  const operatingSystemFilter = operatingSystem
+    ? { operatingSystem: caseInsensitiveStringGen(operatingSystem) }
+    : {};
+
+  const connectivityFilter = connectivity
+    ? {
+        connectivity: {
+          $in: connectivity.map((item: string) =>
+            caseInsensitiveStringGen(item),
+          ),
+        },
+      }
+    : {};
+
+  const powerSourceFilter = powerSource
+    ? { powerSource: caseInsensitiveStringGen(powerSource) }
+    : {};
+
+  const filter = {
+    ...releaseDateFilter,
+    ...brandFilter,
+    ...modelFilter,
+    ...categoryFilter,
+    ...operatingSystemFilter,
+    ...connectivityFilter,
+    ...powerSourceFilter,
+    price: priceFilter,
+    isDeleted: false,
+  };
+  // =================================
+  const result = await Product.find(filter, {
+    isDeleted: 0,
+    __v: 0,
+    specification: 0,
+  });
+  return result;
 };
 
 const getSingleProductFromDB = async (id: string) => {
-  return id;
+  const result = await Product.findById(id, { isDeleted: 0, __v: 0 });
+  return result;
 };
 const deleteProductIntoDB = async (id: string) => {
-  return id;
+  await Product.findByIdAndUpdate(id, { isDeleted: true });
+  return null;
 };
 
 const productServices = {

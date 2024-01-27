@@ -28,16 +28,26 @@ const productSchema = new Schema<TProduct>(
     category: {
       type: String,
     },
+    operatingSystem: {
+      type: String,
+    },
+    connectivity: {
+      type: ["String"],
+    },
+    powerSource: {
+      type: String,
+    },
+    features: {
+      type: {
+        type: "String",
+      },
+    },
     image: {
       type: String,
     },
-    specification: {
-      type: [
-        {
-          name: String,
-          options: {},
-        },
-      ],
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
