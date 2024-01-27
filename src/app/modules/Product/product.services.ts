@@ -58,10 +58,6 @@ const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
       );
     }
 
-    // // dynamic object update
-    // if (features && Object.keys(features).length) {
-    //   for(const [key, value] of Object.entries(features))
-    // }
     if (features && Object.keys(features).length) {
       await Product.findByIdAndUpdate(
         id,
@@ -90,6 +86,7 @@ const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
 // get all
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAllProductFromDB = async (query: Record<string, any>) => {
+  const search = query.search;
   const minPrice = Number(query.minPrice);
   const maxPrice = Number(query.maxPrice);
   const releaseDateStart = query.releaseDateStart;
@@ -105,6 +102,9 @@ const getAllProductFromDB = async (query: Record<string, any>) => {
   // const features = query.features ? query.features.toString() : "";
 
   // =================================
+
+  const searchFilter = search ? { $text: { $search: search } } : {};
+
   const priceFilter = {
     $gte: minPrice || 0,
     $lte: maxPrice || Number.MAX_VALUE,
@@ -161,6 +161,7 @@ const getAllProductFromDB = async (query: Record<string, any>) => {
     : {};
 
   const filter = {
+    ...searchFilter,
     ...releaseDateFilter,
     ...brandFilter,
     ...modelFilter,

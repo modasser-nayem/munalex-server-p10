@@ -55,4 +55,7 @@ productSchema.pre(/^find/, function (next) {
   next();
 });
 
+// create index
+productSchema.index({ name: "text" });
+
 export const Product = model<TProduct>("Product", productSchema);
