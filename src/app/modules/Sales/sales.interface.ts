@@ -4,5 +4,5 @@ export type TSale = {
   productId: Types.ObjectId;
   quantity: number;
   buyer: string;
-  date: Date;
+  date: string;
 };

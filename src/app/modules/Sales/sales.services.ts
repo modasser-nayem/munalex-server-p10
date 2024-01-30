@@ -7,6 +7,7 @@ import { dateRangeCategory, getDateRange } from "../../utils/generateDateRange";
 
 const saleProductIntoDB = async (productId: string, data: TSale) => {
   data.productId = new mongoose.Types.ObjectId(productId);
+  data.date = new Date(data.date).toISOString();
   const product = await Product.findById(data.productId);
   if (!product) {
     throw new AppError(404, "Product not found!");

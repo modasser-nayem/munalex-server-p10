@@ -14,7 +14,7 @@ const salesSchema = new Schema<TSale>(
       type: String,
     },
     date: {
-      type: Date,
+      type: String,
     },
   },
   { timestamps: true },

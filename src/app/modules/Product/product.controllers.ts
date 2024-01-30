@@ -39,6 +39,17 @@ const getAllProduct = catchAsync(async (req, res) => {
   });
 });
 
+const getProductsFilteringDynamicData = catchAsync(async (req, res) => {
+  const result = await productServices.getProductsFilteringDynamicDataIntoDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Products filtering dynamic data retrieved successfully",
+    data: result,
+  });
+});
+
 const getSingleProduct = catchAsync(async (req, res) => {
   const result = await productServices.getSingleProductFromDB(req.params.id);
 
@@ -67,5 +78,6 @@ const productControllers = {
   getAllProduct,
   getSingleProduct,
   deleteProduct,
+  getProductsFilteringDynamicData,
 };
 export default productControllers;

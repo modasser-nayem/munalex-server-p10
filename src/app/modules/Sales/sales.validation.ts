@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isEmptyString } from "../../utils/zodValidation";
 
 const saleProductValidationSchema = z.object({
   body: z.object({
@@ -10,7 +11,9 @@ const saleProductValidationSchema = z.object({
       .min(4, { message: "Buyer name must be grater than 4 character" }),
     date: z
       .string({ required_error: "Sale Date is required" })
-      .datetime({ message: "Sale date must be a date" }),
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide sale date",
+      }),
   }),
 });
 

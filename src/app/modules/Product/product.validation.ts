@@ -10,11 +10,13 @@ const productCreateValidationSchema = z.object({
       .number({ required_error: "Price is required" })
       .min(0, { message: "Price can't be a negative number" }),
     quantity: z
-      .number({ required_error: "Price is required" })
+      .number({ required_error: "Quantity is required" })
       .min(1, { message: "Quantity can't be 0 or negative number" }),
     releaseDate: z
       .string({ required_error: "Release Date is required" })
-      .datetime({ message: "Release date must be a date" }),
+      .refine((value) => isEmptyString(value), {
+        message: "Please provide release date",
+      }),
     model: z
       .string({ required_error: "Model is required" })
       .refine((value) => isEmptyString(value), {

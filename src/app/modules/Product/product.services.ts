@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 
 // create
 const createProductIntoDB = async (data: TProduct) => {
+  data.releaseDate = new Date(data.releaseDate.toString()).toISOString();
   if (
     await Product.findOne({
       name: caseInsensitiveStringGen(data.name),
@@ -27,6 +28,15 @@ const createProductIntoDB = async (data: TProduct) => {
 
 // update
 const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
+  if (data.price) {
+    data.price = Number(data.price);
+  }
+  if (data.quantity) {
+    data.quantity = Number(data.quantity);
+  }
+  if (data?.releaseDate) {
+    data.releaseDate = new Date(data.releaseDate.toString()).toISOString();
+  }
   if (!(await Product.findById(id))) {
     throw new AppError(404, "Product not found!");
   }
@@ -181,6 +191,44 @@ const getAllProductFromDB = async (query: Record<string, any>) => {
   return result;
 };
 
+// get product filtering data based on all product
+const getProductsFilteringDynamicDataIntoDB = async () => {
+  const result = await Product.aggregate([
+    {
+      $group: {
+        _id: null,
+        models: { $addToSet: "$model" },
+        brands: { $addToSet: "$brand" },
+        categories: { $addToSet: "$category" },
+        connectivity: { $addToSet: "$connectivity" },
+        powerSources: { $addToSet: "$powerSource" },
+        features: { $mergeObjects: "$features" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        models: 1,
+        brands: 1,
+        categories: 1,
+        powerSources: 1,
+        features: 1,
+        connectivity: {
+          $reduce: {
+            input: "$connectivity",
+            initialValue: [],
+            in: { $concatArrays: ["$$value", "$$this"] },
+          },
+        },
+      },
+    },
+  ]);
+
+  result[0].connectivity = Array.from(new Set(result[0].connectivity));
+
+  return result[0];
+};
+
 // update
 const getSingleProductFromDB = async (id: string) => {
   const result = await Product.findById(id, { isDeleted: 0, __v: 0 });
@@ -206,5 +254,6 @@ const productServices = {
   getAllProductFromDB,
   getSingleProductFromDB,
   deleteProductIntoDB,
+  getProductsFilteringDynamicDataIntoDB,
 };
 export default productServices;

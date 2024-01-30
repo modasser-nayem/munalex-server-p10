@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Query, Schema, model } from "mongoose";
 import { TProduct } from "./product.interface";
 
 // product model
@@ -16,7 +16,7 @@ const productSchema = new Schema<TProduct>(
       type: Number,
     },
     releaseDate: {
-      type: Date,
+      type: String,
     },
     model: {
       type: String,
@@ -50,7 +50,7 @@ const productSchema = new Schema<TProduct>(
 );
 
 // filter out deleted documents
-productSchema.pre(/^find/, function (next) {
+productSchema.pre<Query<TProduct, TProduct>>(/^find/, function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });

@@ -22,6 +22,12 @@ router.put(
 // get all product
 router.get("/", productControllers.getAllProduct);
 
+// get product products filtering dynamic data
+router.get(
+  "/filtering-data",
+  productControllers.getProductsFilteringDynamicData,
+);
+
 // get single product
 router.get("/:id", productControllers.getSingleProduct);
 
