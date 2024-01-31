@@ -2,12 +2,14 @@ import { Router } from "express";
 import productControllers from "./product.controllers";
 import requestValidate from "../../middlewares/requestValidation";
 import { productValidationSchemas } from "./product.validation";
+import auth from "../../middlewares/auth";
 
 const router = Router();
 
 // create new product
 router.post(
   "/",
+  auth(),
   requestValidate(productValidationSchemas.productCreateValidationSchema),
   productControllers.createProduct,
 );
@@ -15,6 +17,7 @@ router.post(
 // update a product
 router.put(
   "/:id",
+  auth(),
   requestValidate(productValidationSchemas.productUpdateValidationSchema),
   productControllers.updateProduct,
 );
@@ -32,7 +35,7 @@ router.get(
 router.get("/:id", productControllers.getSingleProduct);
 
 // delete a product
-router.delete("/:id", productControllers.deleteProduct);
+router.delete("/:id", auth(), productControllers.deleteProduct);
 
 const productRouter = router;
 export default productRouter;

@@ -7,7 +7,7 @@ import { dateRangeCategory, getDateRange } from "../../utils/generateDateRange";
 
 const saleProductIntoDB = async (productId: string, data: TSale) => {
   data.productId = new mongoose.Types.ObjectId(productId);
-  data.date = new Date(data.date).toISOString();
+  data.date = new Date(data.date);
   const product = await Product.findById(data.productId);
   if (!product) {
     throw new AppError(404, "Product not found!");
@@ -77,8 +77,7 @@ const getSalesHistoryFromDB = async (query: Record<string, any>) => {
   }
 
   const filter = { ...dateRangeFilter };
-
-  const result = await Sales.find(filter);
+  const result = await Sales.find(filter, { __v: 0 });
   return result;
 };
 

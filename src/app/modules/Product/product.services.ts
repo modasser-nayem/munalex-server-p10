@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 // create
 const createProductIntoDB = async (data: TProduct) => {
-  data.releaseDate = new Date(data.releaseDate.toString()).toISOString();
+  data.releaseDate = new Date(data.releaseDate.toString());
   if (
     await Product.findOne({
       name: caseInsensitiveStringGen(data.name),
@@ -35,7 +35,7 @@ const updateProductIntoDB = async (id: string, data: Partial<TProduct>) => {
     data.quantity = Number(data.quantity);
   }
   if (data?.releaseDate) {
-    data.releaseDate = new Date(data.releaseDate.toString()).toISOString();
+    data.releaseDate = new Date(data.releaseDate.toString());
   }
   if (!(await Product.findById(id))) {
     throw new AppError(404, "Product not found!");

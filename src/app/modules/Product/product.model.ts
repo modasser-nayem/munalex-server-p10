@@ -16,7 +16,7 @@ const productSchema = new Schema<TProduct>(
       type: Number,
     },
     releaseDate: {
-      type: String,
+      type: Date,
     },
     model: {
       type: String,
